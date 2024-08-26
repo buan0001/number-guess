@@ -3,11 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Gæt et tal!</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
+
     <h1>Velkommen til gæt et tal!</h1>
+    <h2>Gæt på et tal mellem 1 og <span id="maxValue">100</span></h2>
+    <h4 id="secret">Secret number is:</h4>
+    <h4>Antal forsøg: <span id="attempts">0</span></h4>
+    <h4>Vundne spil: <span id="wins">0</span></h4>
+
+    
+    <ol id="results" reversed>
+    </ol>
+    <form action="" id="guessr">
+        <input type="number" id="guessInput" name="guess" placeholder="Skriv et tal">
+    
+        <button id="guessBtn">Gæt</button>
+    </form>
+
+    <form id="maxValForm">
+        <label for="maxValueInput">Ændr den højeste værdi (nulstiller spillet)</label>
+        <input type="number" name="maxValueInput" placeholder="Max value" id="">
+        <button>Opdater</button>
+    </form>
+
 </body>
-<script src="scriptj.s"></script>
+<script src="script.js"></script>
 </html>
