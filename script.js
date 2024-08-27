@@ -1,83 +1,104 @@
-window.addEventListener("load",main)
+window.addEventListener("load", main);
 
-let maxValue = 100
-let magicNumber;
-let attempts = 0
+let maxValue = 100;
+let attempts = 0;
 let wins = 0;
+let currentGuess;
 
-const resultsList = document.querySelector("#results")
+const resultsList = document.querySelector("#results");
 
-
+const startBtn = document.querySelector("#startBtn");
 
 function main() {
-    console.log("Tal gætteriet kører");
-    newRandomNumber()
-    document.querySelector("#guessr").addEventListener("submit", guessMade)
-    document.querySelector("#maxValForm").addEventListener("submit", maxValChanged)
+  console.log("Tal gætteriet kører");
+  disableGuesses();
+  addEventListeners();
 }
-function newRandomNumber() {
-    magicNumber = Math.floor(Math.random()*maxValue)
-    document.querySelector("#secret").innerHTML = magicNumber
-    
+
+function addEventListeners() {
+  document.querySelector("#maxValForm").addEventListener("submit", maxValChanged);
+  startBtn.addEventListener("click", resetGame);
+  document.querySelectorAll(".guessBtn").forEach(button => {
+    button.addEventListener("click", responseGiven);
+  });
 }
+
+
+
+function startGame() {
+  document.querySelectorAll(".guessBtn").forEach(button => (button.disabled = false));
+  document.querySelector("#guessContainer").hidden = false;
+  startBtn.innerHTML = "Genstart spil";
+  makeGuess();
+}
+
+function disableGuesses() {
+  document.querySelectorAll(".guessBtn").forEach(button => (button.disabled = true));
+}
+
+function makeGuess() {
+    // TODO: Make more intelligent guesses
+  currentGuess = Math.floor(Math.random() * maxValue) + 1;
+  document.querySelector("#computerGuess").innerHTML = currentGuess;
+}
+
 function maxValChanged(event) {
-    event.preventDefault()
-    maxValue = event.target.maxValueInput.valueAsNumber
-    document.querySelector("#maxValue").innerHTML = maxValue
-    restartGame()
+  event.preventDefault();
+  const newVal = event.target.maxValueInput.valueAsNumber;
+  if (maxValue != newVal) {
+    maxValue = newVal
+    document.querySelector("#maxValue").innerHTML = maxValue;
+    resetGame();
+  }
 }
 
-function guessMade(e) {
-    e.preventDefault();
-    console.log(e.target.guess.value);
-    
-    const guess = e.target.guess.valueAsNumber
-    console.log("guess " + guess);
-    
-    const compVal = compareTo(guess)
-    console.log("comp val",compVal);
-    
-    if (compVal < 0) {
-        outputAnswer(`Du gættede på ${guess}. Det var for lavt`)
-        console.log("For lavt");
-    }
-    else if (compVal > 0) {
-        outputAnswer(`Du gættede på ${guess}. Det var for højt`)
-        console.log("For højt");
-        
-    }
-    else if (compVal == 0) {
-        outputAnswer(`Du gættede på ${guess}. Det var korrekt! Spillet genstarter kortvarigt`)
-        setTimeout(() => {
-            restartGame()
-        }, 3000);
-    }
-    attempts++
-    updateAttempts()
+function responseGiven(e) {
+  const response = e.target.dataset.response;
+  console.log(response);
+
+  if (response == "high") {
+    outputAnswer(`Jeg gættede på ${currentGuess}, men det var for højt`);
+    makeGuess();
+  } else if (response == "low") {
+    outputAnswer(`Jeg gættede på ${currentGuess}, men det var for lavt`);
+    makeGuess();
+  } else if (response == "correct") {
+    outputAnswer(`Jeg gættede på ${currentGuess}, og det var korrekt!`);
+    startBtn.addEventListener("click", restartClicked);
+    disableGuesses();
+    wins++;
+    updateWins();
+  } else {
+    console.log("Something went wrong with the response:", response);
+  }
+  attempts++;
+  updateAttempts();
 }
 
-function compareTo(guess){
-    return guess - magicNumber
+function compareTo(guess) {
+  return guess - magicNumber;
 }
 
-function restartGame() {
-    newRandomNumber()
-    resultsList.innerHTML = "";
-    attempts = 0
-    wins++
-    updateWins()
-    updateAttempts()
+function restartClicked(e) {
+  e.target.removeEventListener("click", restartClicked);
+  resetGame();
 }
 
-function outputAnswer(message){
-    
-    resultsList.insertAdjacentHTML("afterbegin", `<li>${message}</li>`)
+function resetGame() {
+  resultsList.innerHTML = "";
+  attempts = 0;
+  updateAttempts();
+  startGame();
 }
 
-function updateWins(){
-    document.querySelector("#wins").innerHTML = wins;
+function outputAnswer(message) {
+  resultsList.insertAdjacentHTML("afterbegin", `<li>${message}</li>`);
 }
 
-function updateAttempts(){
-    document.querySelector("#attempts").innerHTML = attempts
+function updateWins() {
+  document.querySelector("#wins").innerHTML = wins;
+}
+
+function updateAttempts() {
+  document.querySelector("#attempts").innerHTML = attempts;
 }

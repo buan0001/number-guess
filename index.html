@@ -3,27 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gæt et tal!</title>
+    <title>Lad computeren gætte dit tal!</title>
     <link rel="stylesheet" href="style.css">
 </head>
 
-    <h1>Velkommen til gæt et tal!</h1>
-    <h2>Gæt på et tal mellem 1 og <span id="maxValue">100</span></h2>
-    <h4 id="secret">Secret number is:</h4>
-    <h4>Antal forsøg: <span id="attempts">0</span></h4>
-    <h4>Vundne spil: <span id="wins">0</span></h4>
-
-    
+    <h1>Velkommen til omvendt gæt et tal!</h1>
+    <h2>Computeren gætter på et tal mellem 1 og <span id="maxValue">100</span></h2>
+    <h3>Du skal så fortælle computeren, om den gættede for højt, lavt eller lige på pletten</h3>
+    <h3>Svar computeren ved at klikke på den passende knap, og bliv ved indtil computeren gætter rigtigt!</h3>
+    <h4>Antal forsøg: <span id="attempts" style="color: rgb(221, 23, 23);">0</span></h4>
+    <h4>Vundne spil: <span id="wins" style="color: yellow;">0</span></h4>
+    <div>
+        <button id="startBtn">Start spil</button>
+    </div>
+    <div id="guessContainer" hidden>Mit gæt er: <span id="computerGuess"></span></div>
+    <div>
+    <button class="guessBtn" id="highGuess" data-response="high">For højt</button>
+    <button class="guessBtn" id="lowGuess" data-response="low">For lavt</button>
+    <button class="guessBtn" id="correctGuess" data-response="correct">Det var lige netop det tal jeg gik og tænkte på, godt gættet!</button>
+</div>
     <ol id="results" reversed>
     </ol>
-    <form action="" id="guessr">
-        <input type="number" id="guessInput" name="guess" placeholder="Skriv et tal">
-    
-        <button id="guessBtn">Gæt</button>
-    </form>
 
     <form id="maxValForm">
-        <label for="maxValueInput">Ændr den højeste værdi (nulstiller spillet)</label>
+        <label for="maxValueInput">Ændr den højeste værdi (genstarter spillet)</label>
         <input type="number" name="maxValueInput" placeholder="Max value" id="">
         <button>Opdater</button>
     </form>
