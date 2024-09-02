@@ -9,6 +9,49 @@ const resultsList = document.querySelector("#results");
 
 const startBtn = document.querySelector("#startBtn");
 
+// main()
+
+// function main(){
+//     const values = [21,22,23,25,27,28,29,31,32,34,35];
+//     console.log("Finding the index for the value 33 in the array", values)
+//     const indexResult = binarySearch(22, values)
+//     console.log("The index was: ",indexResult);
+    
+// }
+
+// function binarySearch(search, values){
+//     let min = 0
+//     let max = values.length
+//     let middle;
+    
+//     while (min <= max) {
+//     // for (let index = 0; index < 10; index++) {
+    
+
+//         middle = Math.floor((max + min) / 2)
+//         console.log("max is:",max);
+//         console.log("min is:",min);
+//         console.log("middle is:",middle);
+        
+//         const comparison = compare( values[middle], search)
+//         if (comparison > 0) {
+//             max = middle - 1
+//         }
+//         else if (comparison < 0) {
+//             min = middle + 1
+//             // break;
+//         }
+//         // if (min <= max) {middle = -1; break;}
+//         else if (comparison == 0) {return middle;}
+//         // else if (comparison == 0) {found = true; break;}
+//     }
+//     return -1
+// }
+
+// function compare( arrayValue, search) {
+//     return  arrayValue - search
+// }
+
 function main() {
   console.log("Tal gætteriet kører");
   disableGuesses();
