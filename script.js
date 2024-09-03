@@ -6,6 +6,7 @@ let min = 1;
 let middle = Math.floor((max + min) / 2);
 let attempts = 0;
 let wins = 0;
+let bestAttempts;
 let currentGuess;
 let previousGuess;
 
@@ -52,28 +53,36 @@ function binaryGuess(previousGuess) {
   if (max < min) {
     return -1;
   }
+
   else if (max == min) {
     console.log("only one option left!");
-    
   }
+
   return middle;
 }
 
 function makeGuess(feedback) {
   currentGuess = binaryGuess(feedback);
-  if (currentGuess != -1) {
-    console.log("current guess isn't -1");
-    if (currentGuess == min){
-      document.querySelector("#highGuess").disabled = true
-    }
-    else if (currentGuess == max) {
-      document.querySelector("#lowGuess").disabled = true;
-    }
-    document.querySelector("#computerGuess").innerHTML = currentGuess;
-    if (!previousGuess){
-      previousGuess = currentGuess;
-    }
+  if (currentGuess == min) {
+    console.log("currentGuess == min");
+    document.querySelector("#highGuess").disabled = true;
   }
+   if (currentGuess == max) {
+    console.log("currentGuess == max");
+    document.querySelector("#lowGuess").disabled = true;
+  }
+
+  document.querySelector("#computerGuess").innerHTML = currentGuess;
+  if (!previousGuess){
+    previousGuess = currentGuess;
+  }
+
+  incrementAttempts();
+
+  if (max == min) {
+    gameFinished(true)
+  }
+
   return currentGuess;
 }
 
@@ -91,50 +100,21 @@ function maxValChanged(event) {
 function responseGiven(e) {
   const response = e.target.dataset.response;
   console.log(response);
+
   if (response == "high") {
-      makeGuess(1);
+    outputAnswer(`Jeg gættede på ${previousGuess}, men det var for højt`);
+    makeGuess(1);
   } else if (response == "low") {
+    outputAnswer(`Jeg gættede på ${previousGuess}, men det var for lavt`);
     makeGuess(-1);
   }
   else if (response == "correct") {
     gameFinished();
   }
-}
-// function responseGiven(e) {
-//   const response = e.target.dataset.response;
-//   console.log(response);
-//   let forceWin = false;
 
-//   if (response == "high") {
-//     if (previousGuess == min) {
-//       forceWin = true;
-//     } else {
-//       const result = makeGuess(1);
-//       if (result > 0) {
-//         previousGuess = currentGuess
-//         outputAnswer(`Jeg gættede på ${previousGuess}, men det var for højt`);
-//         incrementAttempts()
-//       } else {
-//         forceWin = true;
-//       }
-//     }
-//   } else if (response == "low") {
-//     if (previousGuess == max) {
-//       forceWin = true;
-//     }
-//     const result = makeGuess(-1);
-//     if (result > 0) {
-//       previousGuess = currentGuess;
-//       outputAnswer(`Jeg gættede på ${previousGuess}, men det var for lavt`);
-//       incrementAttempts()
-//     } else {
-//       forceWin = true;
-//     }
-//   }
-//   if (response == "correct" || forceWin) {
-//     gameFinished(forceWin);
-//   }
-// }
+  previousGuess = currentGuess;
+}
+
 
 function incrementAttempts() {
   attempts++;
@@ -145,17 +125,15 @@ function gameFinished(forceWin) {
   console.log("game won!");
 
   if (forceWin) {
-    outputAnswer(`Jeg gættede på ${previousGuess}, og ved at det er korrekt, fordi der ikke er andre muligheder`);
+    outputAnswer(`Jeg gættede på ${currentGuess}, og ved at det er korrekt, fordi der ikke er andre muligheder`);
   } else {
-    incrementAttempts();
-    previousGuess = currentGuess;
-    outputAnswer(`Jeg gættede på ${previousGuess}, og det var korrekt!`);
+    outputAnswer(`Jeg gættede på ${currentGuess}, og det var korrekt!`);
   }
 
   startBtn.addEventListener("click", restartClicked);
   disableGuesses();
-  wins++;
-  updateWins(attempts);
+  incrementWins();
+  updateBestAttempts();
 }
 
 function restartClicked(e) {
@@ -176,9 +154,22 @@ function outputAnswer(message) {
   resultsList.insertAdjacentHTML("afterbegin", `<li>${message}</li>`);
 }
 
-function updateWins(currentAttempts = attempts) {
+function incrementWins(){
+    wins++;
+    updateWins()
+}
+
+function updateWins() {
   document.querySelector("#wins").innerHTML = wins;
-  document.querySelector("#best-attempts").innerHTML = currentAttempts;
+}
+
+function updateBestAttempts(){
+  if (!bestAttempts || attempts < bestAttempts) {
+    
+    bestAttempts = attempts;
+    console.log("best attempts:",bestAttempts);
+    document.querySelector("#best-attempts").innerHTML = bestAttempts;
+  }
 }
 
 function updateAttempts() {
