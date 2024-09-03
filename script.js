@@ -13,6 +13,7 @@ let previousGuess;
 const resultsList = document.querySelector("#results");
 
 const startBtn = document.querySelector("#startBtn");
+const fluff = document.querySelector("#fluff");
 
 function main() {
   console.log("Tal gætteriet kører");
@@ -45,7 +46,19 @@ function binaryGuess(previousGuess) {
   } else if (previousGuess < 0) {
     min = middle + 1;
   }
-  middle = Math.floor((max + min) / 2);
+  tempMiddle = Math.floor((max + min) / 2);
+  // Let's add some randomness to the outcome! Add or subtract 10% of the value
+  let randomness = Math.random() * tempMiddle * 0.1
+  console.log("Pre random",randomness);
+  randomness *= Math.random() < 0.5 ? -1 : 1
+  let randomTotal = Math.floor(randomness + tempMiddle);
+  console.log("Post random",randomness);
+  if (!(randomTotal < min || randomTotal > max)) {
+    console.log("Randomness being used");
+    middle = randomTotal;
+  } else {
+    middle = tempMiddle;
+  }
   console.log("maxValue is:", max);
   console.log("minValue is:", min);
   console.log("middle is:", middle);
@@ -143,6 +156,7 @@ function restartClicked(e) {
 
 function resetGame() {
   resultsList.innerHTML = "";
+  fluff.innerHTML = ""
   attempts = 0;
   max = baseMaxValue;
   min = 1;
@@ -165,10 +179,13 @@ function updateWins() {
 
 function updateBestAttempts(){
   if (!bestAttempts || attempts < bestAttempts) {
-    
     bestAttempts = attempts;
     console.log("best attempts:",bestAttempts);
+    fluff.innerHTML = ("Yes! A new highscore for least amount of attempts")
     document.querySelector("#best-attempts").innerHTML = bestAttempts;
+  }
+  else {
+    fluff.innerHTML = attempts < 3 ? "Nice! That was fast" : attempts < 5 ? "Decent enough" : "Well that was slow"
   }
 }
 

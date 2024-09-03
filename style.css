@@ -10,3 +10,7 @@ div{
     margin: 1em;
     pad: 1em;
 }
+
+#fluff {
+    color: yellow;
+}
