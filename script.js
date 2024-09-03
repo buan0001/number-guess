@@ -53,6 +53,7 @@ function binaryGuess(previousGuess) {
   randomness *= Math.random() < 0.5 ? -1 : 1
   let randomTotal = Math.floor(randomness + tempMiddle);
   console.log("Post random",randomness);
+  // We only use it if it doesn't break the min / max values
   if (!(randomTotal < min || randomTotal > max)) {
     console.log("Randomness being used");
     middle = randomTotal;
@@ -64,11 +65,8 @@ function binaryGuess(previousGuess) {
   console.log("middle is:", middle);
 
   if (max < min) {
+    console.error("Something went wrong");
     return -1;
-  }
-
-  else if (max == min) {
-    console.log("only one option left!");
   }
 
   return middle;
