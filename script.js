@@ -1,56 +1,17 @@
 window.addEventListener("load", main);
 
-let maxValue = 100;
+let baseMaxValue = 100;
+let max = baseMaxValue;
+let min = 1;
+let middle = Math.floor((max + min) / 2);
 let attempts = 0;
 let wins = 0;
 let currentGuess;
+let previousGuess;
 
 const resultsList = document.querySelector("#results");
 
 const startBtn = document.querySelector("#startBtn");
-
-// main()
-
-// function main(){
-//     const values = [21,22,23,25,27,28,29,31,32,34,35];
-//     console.log("Finding the index for the value 33 in the array", values)
-//     const indexResult = binarySearch(22, values)
-//     console.log("The index was: ",indexResult);
-    
-// }
-
-// function binarySearch(search, values){
-//     let min = 0
-//     let max = values.length
-//     let middle;
-    
-//     while (min <= max) {
-//     // for (let index = 0; index < 10; index++) {
-    
-
-//         middle = Math.floor((max + min) / 2)
-//         console.log("max is:",max);
-//         console.log("min is:",min);
-//         console.log("middle is:",middle);
-        
-//         const comparison = compare( values[middle], search)
-//         if (comparison > 0) {
-//             max = middle - 1
-//         }
-//         else if (comparison < 0) {
-//             min = middle + 1
-//             // break;
-//         }
-//         // if (min <= max) {middle = -1; break;}
-//         else if (comparison == 0) {return middle;}
-//         // else if (comparison == 0) {found = true; break;}
-//     }
-//     return -1
-// }
-
-// function compare( arrayValue, search) {
-//     return  arrayValue - search
-// }
 
 function main() {
   console.log("Tal gætteriet kører");
@@ -61,36 +22,68 @@ function main() {
 function addEventListeners() {
   document.querySelector("#maxValForm").addEventListener("submit", maxValChanged);
   startBtn.addEventListener("click", resetGame);
-  document.querySelectorAll(".guessBtn").forEach(button => {
+  document.querySelectorAll(".guessBtn").forEach((button) => {
     button.addEventListener("click", responseGiven);
   });
 }
 
-
-
 function startGame() {
-  document.querySelectorAll(".guessBtn").forEach(button => (button.disabled = false));
+  document.querySelectorAll(".guessBtn").forEach((button) => (button.disabled = false));
   document.querySelector("#guessContainer").hidden = false;
   startBtn.innerHTML = "Genstart spil";
   makeGuess();
 }
 
 function disableGuesses() {
-  document.querySelectorAll(".guessBtn").forEach(button => (button.disabled = true));
+  document.querySelectorAll(".guessBtn").forEach((button) => (button.disabled = true));
 }
 
-function makeGuess() {
-    // TODO: Make more intelligent guesses
-  currentGuess = Math.floor(Math.random() * maxValue) + 1;
-  document.querySelector("#computerGuess").innerHTML = currentGuess;
+function binaryGuess(previousGuess) {
+  if (previousGuess > 0) {
+    max = middle - 1;
+  } else if (previousGuess < 0) {
+    min = middle + 1;
+  }
+  middle = Math.floor((max + min) / 2);
+  console.log("maxValue is:", max);
+  console.log("minValue is:", min);
+  console.log("middle is:", middle);
+
+  if (max < min) {
+    return -1;
+  }
+  else if (max == min) {
+    console.log("only one option left!");
+    
+  }
+  return middle;
+}
+
+function makeGuess(feedback) {
+  currentGuess = binaryGuess(feedback);
+  if (currentGuess != -1) {
+    console.log("current guess isn't -1");
+    if (currentGuess == min){
+      document.querySelector("#highGuess").disabled = true
+    }
+    else if (currentGuess == max) {
+      document.querySelector("#lowGuess").disabled = true;
+    }
+    document.querySelector("#computerGuess").innerHTML = currentGuess;
+    if (!previousGuess){
+      previousGuess = currentGuess;
+    }
+  }
+  return currentGuess;
 }
 
 function maxValChanged(event) {
   event.preventDefault();
   const newVal = event.target.maxValueInput.valueAsNumber;
-  if (maxValue != newVal) {
-    maxValue = newVal
-    document.querySelector("#maxValue").innerHTML = maxValue;
+  if (baseMaxValue != newVal) {
+    baseMaxValue = newVal;
+    max = baseMaxValue;
+    document.querySelector("#maxValue").innerHTML = baseMaxValue;
     resetGame();
   }
 }
@@ -98,28 +91,71 @@ function maxValChanged(event) {
 function responseGiven(e) {
   const response = e.target.dataset.response;
   console.log(response);
-
   if (response == "high") {
-    outputAnswer(`Jeg gættede på ${currentGuess}, men det var for højt`);
-    makeGuess();
+      makeGuess(1);
   } else if (response == "low") {
-    outputAnswer(`Jeg gættede på ${currentGuess}, men det var for lavt`);
-    makeGuess();
-  } else if (response == "correct") {
-    outputAnswer(`Jeg gættede på ${currentGuess}, og det var korrekt!`);
-    startBtn.addEventListener("click", restartClicked);
-    disableGuesses();
-    wins++;
-    updateWins();
-  } else {
-    console.log("Something went wrong with the response:", response);
+    makeGuess(-1);
   }
+  else if (response == "correct") {
+    gameFinished();
+  }
+}
+// function responseGiven(e) {
+//   const response = e.target.dataset.response;
+//   console.log(response);
+//   let forceWin = false;
+
+//   if (response == "high") {
+//     if (previousGuess == min) {
+//       forceWin = true;
+//     } else {
+//       const result = makeGuess(1);
+//       if (result > 0) {
+//         previousGuess = currentGuess
+//         outputAnswer(`Jeg gættede på ${previousGuess}, men det var for højt`);
+//         incrementAttempts()
+//       } else {
+//         forceWin = true;
+//       }
+//     }
+//   } else if (response == "low") {
+//     if (previousGuess == max) {
+//       forceWin = true;
+//     }
+//     const result = makeGuess(-1);
+//     if (result > 0) {
+//       previousGuess = currentGuess;
+//       outputAnswer(`Jeg gættede på ${previousGuess}, men det var for lavt`);
+//       incrementAttempts()
+//     } else {
+//       forceWin = true;
+//     }
+//   }
+//   if (response == "correct" || forceWin) {
+//     gameFinished(forceWin);
+//   }
+// }
+
+function incrementAttempts() {
   attempts++;
   updateAttempts();
 }
 
-function compareTo(guess) {
-  return guess - magicNumber;
+function gameFinished(forceWin) {
+  console.log("game won!");
+
+  if (forceWin) {
+    outputAnswer(`Jeg gættede på ${previousGuess}, og ved at det er korrekt, fordi der ikke er andre muligheder`);
+  } else {
+    incrementAttempts();
+    previousGuess = currentGuess;
+    outputAnswer(`Jeg gættede på ${previousGuess}, og det var korrekt!`);
+  }
+
+  startBtn.addEventListener("click", restartClicked);
+  disableGuesses();
+  wins++;
+  updateWins(attempts);
 }
 
 function restartClicked(e) {
@@ -130,6 +166,8 @@ function restartClicked(e) {
 function resetGame() {
   resultsList.innerHTML = "";
   attempts = 0;
+  max = baseMaxValue;
+  min = 1;
   updateAttempts();
   startGame();
 }
@@ -138,8 +176,9 @@ function outputAnswer(message) {
   resultsList.insertAdjacentHTML("afterbegin", `<li>${message}</li>`);
 }
 
-function updateWins() {
+function updateWins(currentAttempts = attempts) {
   document.querySelector("#wins").innerHTML = wins;
+  document.querySelector("#best-attempts").innerHTML = currentAttempts;
 }
 
 function updateAttempts() {
